@@ -155,7 +155,7 @@ public class JobExecThread implements Callable<Double>{
 					// no failure, no maintenance. Just increment cost models normally.
 					if(!isPlanning)
 						machine.procCost += current.getJobCost()/Macros.TIME_SCALE_FACTOR;
-					cost += current.getJobCost()/Macros.TIME_SCALE_FACTOR;
+					//cost += current.getJobCost()/Macros.TIME_SCALE_FACTOR;
 					for(Component comp : compList)
 						comp.initAge++;
 					if(!isPlanning)
