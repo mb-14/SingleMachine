@@ -28,6 +28,10 @@ public class JobExecThread implements Callable<Double>{
 		if(isPlanning)
 			count = Macros.SIMULATION_COUNT;
 		while(count-- > 0){
+			Main.labour[0] = 2;
+			Main.labour[1] = 4;
+			Main.labour[2] = 8;
+			timeSync();
 			long time = 0;
 			Component[] compList;
 			Schedule jobList;

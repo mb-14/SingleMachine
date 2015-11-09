@@ -12,7 +12,7 @@ public class SimulationThread implements Callable<SimulationResult> {
 	long compCombo[]; //Combination of components to perform PM on.
 	ArrayList<Integer> pmOpportunity;
 	Component[] simCompList;
-	int noOfSimulations = 1000;
+	int noOfSimulations = Macros.SIMULATION_COUNT;
 	boolean noPM;
 	Machine machine;
 	public SimulationThread(Schedule schedule, long compCombo[], ArrayList<Integer> pmOpportunity,boolean noPM, Machine machine){

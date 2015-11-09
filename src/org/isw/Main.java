@@ -138,6 +138,19 @@ public class Main {
 			
 			planningTime = (System.nanoTime() - startTime)/Math.pow(10, 9);
 			mainSchedules = minSchedules;
+			try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("final_schedule_"+machines.size(),true)))){ 
+			for(int i = 0;i<machines.size();i++){
+				Schedule schedule = mainSchedules.get(i);
+				for(Job pmJob : schedule.getPMJobs())
+					out.print(machines.get(i).compList[pmJob.compNo].compName+",");
+					out.println();
+					out.println(schedule.printSchedule());
+					out.println();
+			}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			for(int i=0;i<Macros.SIMULATION_COUNT;i++)
 				calculateCost(false);
 		}	
@@ -328,7 +341,7 @@ public class Main {
 		for(int i=0 ;i<machine.compList.length; i++)
 			System.out.println("Component "+machine.compList[i].compName+": PM "+(double)machine.compPMJobsDone[i]/simCount+"|CM "+(double)machine.compCMJobsDone[i]/simCount);
 		
-		try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("results.csv",true)))){ 
+		try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("results"+machines.size()+".csv",true)))){ 
 			for(int i=0;i<machine.compList.length;i++)
 				out.format("%s;", machine.compList[i].compName);
 			out.print(",");

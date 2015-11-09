@@ -261,9 +261,9 @@ public class Schedule implements  Comparable<Schedule>,Serializable{
 	
 	public ArrayList<Job> getPMJobs() {
 		ArrayList<Job> pmJobs = new ArrayList<Job>();
-		for(int i = jobs.size()-1; i>0; i--){
-				if(jobs.get(i).jobType == Job.JOB_PM)
-					pmJobs.add(jobs.get(i));
+		for(Job job : jobs){
+			if(job.getJobName().equals("PM")|| job.getJobType()==Job.JOB_PM)
+				pmJobs.add(job);
 		}
 		return pmJobs;
 	}
