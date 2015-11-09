@@ -48,6 +48,7 @@ public class MachineThread implements Callable<ArrayList<SimulationResult>> {
 				results.add(result);
 				}
 		}	
+		results.add(new SimulationResult(0,0,getCombolist(0),pmoList,true,Main.machines.indexOf(machine)));
 		threadPool.shutdown();
 		while(!threadPool.isTerminated());
 		return results;

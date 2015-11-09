@@ -95,6 +95,8 @@ public class Main {
 				ArrayList<SimulationResult> results  = pool.take().get();	
 				for(int j=0;j<results.size();j++)
 				{
+					if(results.get(j).noPM)
+						continue;
 						for(int pmOpp=0; pmOpp < results.get(j).pmOpportunity.size(); pmOpp++)
 						{
 							// calculate start times for each job in SimulationResult
@@ -108,13 +110,10 @@ public class Main {
 						}
 					
 				}
-				
-				if(results.size() > 0)
-				{	
+
 					System.out.println("Machine "+(results.get(0).id+1)+": Number of PM schedules:"+results.size());
 					table.add(results);
 				
-				}
 			}
 			Collections.sort(table, new MachineComparator());
 			threadPool.shutdown();
@@ -162,8 +161,7 @@ public class Main {
 	private static void calculatePermutations(SimulationResult row, int level, LabourAvailability pmLabourAssignment) throws InterruptedException, ExecutionException {
 		//pmLabourAssignment.print();
 		Schedule temp = new Schedule(mainSchedules.get(row.id));
-		LabourAvailability tempLabour = new LabourAvailability(pmLabourAssignment);
-		assignLabour(row,tempLabour);
+		assignLabour(row);
 		if(level == table.size()-1){
 			calculateCost(true);
 		}
@@ -199,7 +197,9 @@ public class Main {
 		}
 	}
 	
-	static void assignLabour(SimulationResult row, LabourAvailability pmLabour){
+	static void assignLabour(SimulationResult row){
+		if(row.noPM)
+			return;
 		Component[] compList = machines.get(row.id).compList;
 		row.pmTTRs = new long[row.pmOpportunity.size()][compList.length];
 		
@@ -207,8 +207,6 @@ public class Main {
 		if(!mainSchedules.get(row.id).isEmpty())
 		{
 			
-			// generate PM TTRs of all components undergoing PM for this row
-			boolean meetsReqForAllOpp = true;
 			int[][] seriesLabour = new int[row.pmOpportunity.size()][3];
 			long[] seriesTTR = new long[row.pmOpportunity.size()];
 			for(int pmOpp = 0; pmOpp<row.pmOpportunity.size(); pmOpp++)
@@ -237,23 +235,11 @@ public class Main {
 					}
 					
 				}
-				if(!pmLabour.checkAvailability(row.startTimes[pmOpp], row.startTimes[pmOpp]+seriesTTR[pmOpp], seriesLabour[pmOpp]))
-				{
-					// add series of PM jobs at that opportunity.
-					meetsReqForAllOpp = false;
-					break;
-				}
 			}
-			
-			if(meetsReqForAllOpp)
-			{
+			//incorporate the PM job(s) into schedule of machine
+			addPMJobs(mainSchedules.get(row.id), machines.get(row.id).compList, row, seriesTTR, seriesLabour);
 				
-				//incorporate the PM job(s) into schedule of machine
-				addPMJobs(mainSchedules.get(row.id), machines.get(row.id).compList, row, seriesTTR, seriesLabour);
-				//reserve labour
-				for(int pmOpp = 0; pmOpp<row.pmOpportunity.size(); pmOpp++)
-					pmLabour.employLabour(row.startTimes[pmOpp], row.startTimes[pmOpp]+seriesTTR[pmOpp], seriesLabour[pmOpp]);
-			}
+			
 		}
 	}
 	private static void addPMJobs(Schedule schedule,Component[] compList, SimulationResult row, long[] seriesTTR, int[][] seriesLabour) {
